@@ -161,7 +161,7 @@ NSRect NSRectFromNode(SnakePointArea area) {
         default:
             break;
     }
-
+    
     [self.body insertObject:NSStringFromPoint(nArea) atIndex:0];
     self.shadow = self.tail;
     [self.body removeLastObject];
@@ -182,6 +182,7 @@ NSRect NSRectFromNode(SnakePointArea area) {
 @implementation SnakeGame {
     Snake *snake;
     SnakeBlocks *_blocks;
+    SnakeBody *snakeBody;
     NSRect windowView;
     NSTimer *timer;
 }
@@ -191,6 +192,7 @@ NSRect NSRectFromNode(SnakePointArea area) {
     if (self) {
         windowView = NSMakeRect(0, 0, frame.size.width, frame.size.height);
         snake = [[Snake alloc] initWithScene:windowView];
+        snakeBody = snake.body;
         _blocks = [[SnakeBlocks alloc] initWithScene:windowView];
         [_blocks newPosition:snake.areaNoSnake];
         [self resume];
@@ -210,10 +212,42 @@ NSRect NSRectFromNode(SnakePointArea area) {
     [[NSApplication sharedApplication] terminate:nil];
 }
 
-- (BOOL)collisionCheck {
+- (void) goThroughWall:(NSRect)frame {
+    SnakePointArea nArea;
+    switch (snake.facing) {
+        case SnakeUp: { nArea = NSMakePoint(snake.head.x, snake.head.y-85); }
+            break;
+            
+        case SnakeDown: { nArea = NSMakePoint(snake.head.x, snake.head.y + 85); }
+            break;
+            
+        case SnakeLeft: { nArea = NSMakePoint(snake.head.x +85, snake.head.y); }
+            break;
+            
+        case SnakeRight: { nArea = NSMakePoint(snake.head.x -85, snake.head.y); }
+            break;
+        default:
+            break;
+    }
+    [snake.body insertObject:NSStringFromPoint(nArea) atIndex:0];
+    snake.shadow = snake.tail;
+    [snake.body removeLastObject];
+    [snake.areaNoSnake removeObject:NSStringFromPoint(nArea)];
+    [snake.areaNoSnake addObject:NSStringFromPoint(snake.shadow)];
+}
+
+
+- (BOOL)crashIntoWall __attribute__((deprecated("Created goThroughWall"))){
     if (!NSContainsRect(windowView, NSRectFromNode(snake.head))) {
         [self gameOver];
         return YES;
+    }
+    return NO;
+}
+
+- (BOOL)collisionCheck {
+    if (!NSContainsRect(windowView, NSRectFromNode(snake.head))) {
+        [self goThroughWall:windowView];
     }
     for (int i = 1; i < snake.body.count; i++) {
         NSString *node = snake.body[i];
@@ -276,12 +310,12 @@ NSRect NSRectFromNode(SnakePointArea area) {
     [super drawRect:dirtyRect];
     [[NSColor blueColor] set];
     NSRectFill(windowView);
-
+    
     // Snake Colour
     [[NSColor greenColor] set];
     [snake start];
     [snake.path fill];
-
+    
     // Block Colour
     [[NSColor redColor] set];
     [_blocks render];
