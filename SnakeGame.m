@@ -326,7 +326,7 @@ NSRect NSRectFromNode(SnakePointArea area) {
 
 // Reminds me of Java xD
 - (void)keyDown:(NSEvent *)theEvent {
-    if ([theEvent modifierFlags] & NSNumericPadKeyMask) {
+    if ([theEvent modifierFlags] & NSEventModifierFlagNumericPad) {
         NSString *pointer = [theEvent charactersIgnoringModifiers];
         unichar keyChar = 0;
         if ([pointer length] == 0) return;

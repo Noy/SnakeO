@@ -38,7 +38,7 @@
     [appMenu addItem:quitMenuItem];
     
     NSWindow *window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 600, 600)
-                                                   styleMask:NSTitledWindowMask | NSResizableWindowMask | NSClosableWindowMask backing:NSBackingStoreBuffered defer:NO];
+                                                   styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable backing:NSBackingStoreBuffered defer:NO];
     [window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
     [window setTitle:[[NSProcessInfo processInfo] processName]];
     [window makeKeyAndOrderFront:self];
